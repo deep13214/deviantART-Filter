@@ -1,5 +1,105 @@
 const Options = (() => {
 
+    const OPTS = [
+
+        {
+            'id': 'managementPanelType',
+            'default': 'tab',
+            'visible': true,
+            'order': 0,
+            'dataType': 'string',
+            'uiType': 'radios',
+            'values': [
+                {
+                    'value': 'window',
+                },
+                {
+                    'value': 'tab',
+                }
+            ]
+        },
+
+        {
+            'id': 'metadataEnabled',
+            'group': 'metadata',
+            'default': true,
+            'visible': true,
+            'order': 2,
+            'dataType': 'boolean',
+            'uiType': 'radiobuttons',
+            'values': [
+                {
+                    'value': true,
+                },
+                {
+                    'value': false,
+                }
+            ]
+        },
+
+        {
+            'id': 'metadataBatchSize',
+            'group': 'metadata',
+            'default': 96,
+            'visible': true,
+            'order': 3,
+            'type': 'number',
+            'minimum': 8,
+            'maximum': 96,
+            'condition': 'options.metadataEnabled'
+        },
+
+        {
+            'id': 'metadataCacheTTL',
+            'group': 'metadata',
+            'default': 7,
+            'visible': true,
+            'order': 4,
+            'type': 'number',
+            'minimum': 0,
+            'maximum': 365,
+            'condition': 'options.metadataEnabled'
+        },
+
+        {
+            'id': 'metadataDebug',
+            'group': 'metadata',
+            'default': false,
+            'visible': true,
+            'order': 5,
+            'type': 'boolean',
+            'condition': 'options.metadataEnabled'
+        },
+
+        {
+            'id': 'placeholders',
+            'default': true,
+            'visible': true,
+            'order': 1,
+            'type': 'boolean',
+        },
+
+        {
+            'id': 'privateStorage',
+            'default': 'read',
+            'visible': false,
+            'dataType': 'string',
+            'uiType': 'radios',
+            'values': [
+                {
+                    'value': 'write',
+                },
+                {
+                    'value': 'read',
+                },
+                {
+                    'value': 'none',
+                }
+            ]
+        },
+
+    ];
+
     const Options = {
 
         /**
@@ -8,38 +108,41 @@ const Options = (() => {
         'initDefaultOptions': async function () {
             console.log('[Background] Options.initDefaultOptions()');
 
-            //TODO: this list should probably be a constant that is somehow tied to the "options" data in getOptions()
-            var defaults = {
-                'managementPanelType': 'tab',
-                'metadataCacheTTL': 7,
-                'metadataDebug': false,
-                'placeholders': true,
-                'privateStorage': 'read'
-            };
-
             const data = await browser.storage.sync.get();
 
-            var options = {};
-            for (var option in defaults) {
-                if (data[option] === undefined) {
-                    options[option] = defaults[option];
+            const options = {};
+            for (const option of OPTS) {
+                if (data[option.id] === undefined) {   //TODO: should this also check for null values?
+                    options[option.id] = option.default;
                 }
             }
+
+            console.log('[Background] Options.initDefaultOptions() :: Setting Defaults', options);
 
             return browser.storage.sync.set(options);
         },
 
         /**
          *
-         * @param {string} option the key of the option
+         * @param {string} option the id of the option
          * @param {string} value the value of the option
          */
         'setOption': function (option, value) {
             console.log('[Background] Options.setOption()', option, value);
 
-            var opt = {};
+            const opt = {};
             opt[option] = value;
             return browser.storage.sync.set(opt);
+        },
+
+        /**
+         *
+         * @param {object} option the options
+         */
+        'setOptions': function (options) {
+            console.log('[Background] Options.setOptions()', options);
+
+            return browser.storage.sync.set(options);
         },
 
         /**
@@ -48,60 +151,112 @@ const Options = (() => {
         'getOptions': async function () {
             console.log('[Background] Options.getOptions()');
 
-            //TODO: this list (and the properties below) should probably be a constant that is somehow tied to the "defaults"
-            // NOTE: the order used below is the display order on the options tab of the management panel
-            const data = await browser.storage.sync.get([
-                'placeholders',
-                'managementPanelType',
-                'metadataCacheTTL',
-                'metadataDebug',
-            ]);
+            const options = OPTS.filter((opt) => opt.visible).sort((a, b) => a.order - b.order);
 
-            var options = [];
-            var opt;
-            for (var option in data) {
-                opt = {
-                    'id': option,
-                    'name': browser.i18n.getMessage(`Option${option}Name`),
-                    'description': browser.i18n.getMessage(`Option${option}Description`),
-                    'value': data[option]
-                };
-                switch (option) {
-                    case 'managementPanelType':
-                        opt.type = 'radio';
-                        opt.values = [
-                            {
-                                'value': 'window',
-                                'label': browser.i18n.getMessage('OptionManagementPanelTypeValueWindow')
-                            },
-                            {
-                                'value': 'tab',
-                                'label': browser.i18n.getMessage('OptionManagementPanelTypeValueTab')
-                            }
-                        ];
-                        break;
+            const values = await browser.storage.sync.get(options.forEach((opt) => opt.id));
 
-                    case 'metadataCacheTTL':
-                        opt.type = 'number';
-                        opt.minimum = 0;
-                        opt.maximum = 365;
-                        break;
+            for (const option of options) {
+                option.name = browser.i18n.getMessage(`Option${option.id}Name`);
+                option.description = browser.i18n.getMessage(`Option${option.id}Description`);
+                option.value = values[option.id];
 
-                    case 'metadataDebug':
-                    case 'placeholders':
-                        opt.type = 'checkbox';
-                        break;
-
-                    default:
-                        opt.type = 'string';
-                        break;
+                if (option.type === 'radio') {
+                    for (const val of option.values) {
+                        val.label = browser.i18n.getMessage(`Option${option.id}Value${val.value}`);
+                    }
                 }
-                options.push(opt);
             }
 
             console.log('[Background] Options.getOptions() :: Return', options);
 
             return { 'options': options };
+        },
+
+        /**
+         *
+         */
+        'getOptionsSchemaForm': async function () {
+            console.log('[Background] Options.getOptionsSchemaForm()');
+
+            const options = OPTS.filter((opt) => opt.visible).sort((a, b) => a.order - b.order);
+
+            const values = await browser.storage.sync.get(options.forEach((opt) => opt.id));
+
+            const schema = {
+                'type': 'object',
+                'properties': {},
+                'required': []
+            };
+
+            let form = [];
+
+            for (const option of options) {
+                const prop = option;
+                prop.title = browser.i18n.getMessage(`Option${option.id}Name`);
+                prop.description = browser.i18n.getMessage(`Option${option.id}Description`);
+                if (prop.dataType !== undefined) {
+                    prop.type = prop.dataType;
+                    delete prop.dataType;
+                }
+
+                const elem = {
+                    'key': option.id,
+                    'type': option.uiType,
+                    'condition': option.condition,
+                    'group': option.group
+                };
+
+                if (option.values !== undefined) {
+                    elem.titleMap = [];
+                    for (const val of option.values) {
+                        elem.titleMap.push({
+                            'value': val.value,
+                            'name': browser.i18n.getMessage(`Option${option.id}Value${val.value}`)
+                        });
+                    }
+                }
+
+                if (prop.type !== 'boolean') {
+                    schema.required.push(option.id);
+                }
+
+                schema.properties[option.id] = prop;
+                form.push(elem);
+            }
+
+            const groups = {};
+            for (const elem of form) {
+                if (elem.group !== undefined) {
+                    if (groups[elem.group] === undefined) {
+                        groups[elem.group] = {
+                            'type': 'section',
+                            'htmlClass': 'panel-body',
+                            'items': []
+                        };
+                    }
+                    groups[elem.group].items.push(elem);
+                }
+            }
+
+            for (const group in groups) {
+                form.push({
+                    'type': 'section',
+                    'htmlClass': 'panel panel-default',
+                    'items': [
+                        groups[group]
+                    ]
+                });
+            }
+
+            form = form.filter((elem) => elem.group === undefined);
+
+            console.log('[Background] Options.getOptionsSchemaForm() :: Return', schema, form, values);
+
+            return {
+                'schema': schema,
+                'form': form,
+                'values': values
+            };
         }
 
     };

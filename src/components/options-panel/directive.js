@@ -1,14 +1,11 @@
 //angular.module('deviantArtFilter.components', [])
-angular.module('deviantArtFilter.components.OptionsPanel', ['ngMessages'])
+angular.module('deviantArtFilter.components.OptionsPanel', ['schemaForm', 'ngMessages'])
 
     .controller('OptionsPanelCtrl', ['$scope', function ($scope) {
 
         $scope.labels = {
             'optionsHeading': browser.i18n.getMessage('OptionsHeading'),
-            'enabled': browser.i18n.getMessage('LabelEnabled'),
-            'minimum': browser.i18n.getMessage('OptionLabelMinimum'),
-            'maximum': browser.i18n.getMessage('OptionLabelMaximum'),
-            'required': browser.i18n.getMessage('OptionLabelRequired'),
+            'options': browser.i18n.getMessage('LabelOptions'),
         };
         console.log('[Component] OptionsPanelCtrl :: Labels', $scope.labels);
 
@@ -18,52 +15,69 @@ angular.module('deviantArtFilter.components.OptionsPanel', ['ngMessages'])
             $scope.alerts.splice(index, 1);
         };
 
-        $scope.getOptions = function () {
-            console.log('[Component] OptionsPanelCtrl.getOptions()');
-            $scope.loading = browser.i18n.getMessage('GenericLoading', [$scope.optionsLbl]);
-
-            browser.runtime.sendMessage({
-                'action': 'get-options'
-            }).then((response) => {
-                console.log('[Component] OptionsPanelCtrl.getOptions() :: Response', response);
-                $scope.$apply(() => {
-                    $scope.options = response.options;
-                    $scope.loading = false;
-                });
-            }).catch((error) => {
-                console.log('[Component] OptionsPanelCtrl.getOptions() :: Error', error);
-                $scope.$apply(() => {
-                    $scope.alerts.push({
-                        'type': 'danger',
-                        'msg': browser.i18n.getMessage('GenericLoadingError', [$scope.optionsLbl, error.message])
-                    });
-                    $scope.loading = false;
-                });
-            });
-        };
-        $scope.getOptions();
-
-        $scope.changeOption = function (option) {
-            console.log('[Component] OptionsPanelCtrl.changeOption()', option);
-            if ($scope.OptionsPanelCtrlForm[option.id].$valid) {
+        $scope.changeOption = function (modelValue, form) {
+            console.log('[Component] OptionsPanelCtrl.changeOption()', modelValue, form);
+            if ($scope.OptionsPanelCtrlForm[form.schema.id].$valid) {
                 browser.runtime.sendMessage({
                     'action': 'set-option',
                     'data': {
-                        'option': option.id,
-                        'value': option.value
+                        'option': form.schema.id,
+                        'value': modelValue
                     }
                 }).catch((error) => {
                     console.log('[Component] OptionsPanelCtrl.changeOption() :: Error', error);
                     $scope.$apply(() => {
-                        option.value = !option.value;
                         $scope.alerts.push({
                             'type': 'danger',
-                            'msg': browser.i18n.getMessage('OptionUpdateError', option.name, [error.message || ''])
+                            'msg': browser.i18n.getMessage('OptionUpdateError', form.schema.name, [error.message])
                         });
                     });
                 });
             }
         };
+
+        $scope.schema = {};
+        $scope.form = [];
+        $scope.options = {};
+
+        $scope.config = {
+            'formDefaults': {
+                'disableSuccessState': true,
+                'onChange': $scope.changeOption
+            },
+            'validationMessage': {
+                '101': browser.i18n.getMessage('OptionLabelMinimum') + ': {{schema.minimum}}',
+                '103': browser.i18n.getMessage('OptionLabelMaximum') + ': {{schema.maximum}}',
+                '302': browser.i18n.getMessage('OptionLabelRequired')
+            }
+        };
+
+        $scope.getOptionsSchemaForm = function () {
+            console.log('[Component] OptionsPanelCtrl.getOptionsSchemaForm()');
+            $scope.loading = browser.i18n.getMessage('GenericLoading', [$scope.labels.options]);
+
+            browser.runtime.sendMessage({
+                'action': 'get-options-schema-form'
+            }).then((response) => {
+                console.log('[Component] OptionsPanelCtrl.getOptionsSchemaForm() :: Response', response);
+                $scope.schema = response.schema;
+                $scope.form = response.form;
+                $scope.options = response.values;
+            }).catch((error) => {
+                console.error('[Component] OptionsPanelCtrl.getOptionsSchemaForm() :: Error', error);
+                $scope.alerts.push({
+                    'type': 'danger',
+                    'msg': browser.i18n.getMessage('GenericLoadingError', [$scope.labels.options, error.message])
+                });
+            }).finally(() => {
+                console.log('[Component] OptionsPanelCtrl.getOptionsSchemaForm() :: Finally');
+                $scope.loading = false;
+                $scope.$apply();
+                $scope.$broadcast('schemaFormRedraw');
+            });
+        };
+        $scope.getOptionsSchemaForm();
+
     }])
 
     .directive('optionsPanel', function () {

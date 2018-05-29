@@ -15,12 +15,16 @@
     "./node_modules/angular/angular.min.js",
     "./node_modules/angular-messages/angular-messages.min.js",
     "./node_modules/angular-sanitize/angular-sanitize.min.js",
+    "./node_modules/angular-schema-form/dist/bootstrap-decorator.min.js",
+    "./node_modules/angular-schema-form/dist/schema-form.min.js",
     "./node_modules/bootstrap/dist/css/bootstrap.min.css",
     "./node_modules/bootstrap/dist/js/bootstrap.min.js",
     "./node_modules/idb/lib/idb.js",
     "./node_modules/jquery/dist/jquery.min.js",
     "./node_modules/ng-table/bundles/ng-table.min.css",
     "./node_modules/ng-table/bundles/ng-table.min.js",
+    "./node_modules/objectpath/lib/ObjectPath.js",
+    "./node_modules/tv4/tv4.js",
     "./node_modules/webextension-polyfill/dist/browser-polyfill.min.js"
   ],
   "plugin_options": {

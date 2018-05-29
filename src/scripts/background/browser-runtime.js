@@ -32,8 +32,14 @@ const BrowserRuntime = (() => {
                 case 'get-options':
                     return Options.getOptions();
 
+                case 'get-options-schema-form':
+                    return Options.getOptionsSchemaForm();
+
                 case 'set-option':
                     return Options.setOption(message.data.option, message.data.value);
+
+                case 'set-options':
+                    return Options.setOptions(message.data);
 
                 case 'get-filters-meta-data':
                     return Promise.resolve(Filters.getFiltersMetaData());

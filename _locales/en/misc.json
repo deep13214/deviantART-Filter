@@ -35,6 +35,9 @@
   "LabelFilters": {
     "message": "Filters"
   },
+  "LabelOptions": {
+    "message": "Options"
+  },
   "LabelVersion": {
     "message": "Version"
   }

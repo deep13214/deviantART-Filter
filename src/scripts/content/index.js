@@ -20,8 +20,7 @@ browser.runtime.onMessage.addListener((message) => {
 
     switch (message.action) {
         case 'toggle-placeholders':
-            document.querySelector('body').classList.toggle('placeholders');
-            document.querySelector('body').classList.toggle('no-placeholders');
+            togglePlaceholders(message.data.placeholders);
             break;
     }
 
@@ -29,11 +28,20 @@ browser.runtime.onMessage.addListener((message) => {
 });
 
 browser.storage.sync.get('placeholders').then(({ placeholders }) => {
-    document.querySelector('body').classList.add(placeholders ? 'placeholders' : 'no-placeholders');
+    togglePlaceholders(placeholders);
 });
 
 browser.runtime.sendMessage({ 'action': 'content-script-loaded' });
 
+
+/**
+ * Toggles the display of placeholders for filtered thumbnails
+ * @param {boolean} active indicates whether or not placeholders should be active/enabled
+ */
+function togglePlaceholders(active) {
+    document.querySelector('body').classList.toggle('placeholders', active);
+    document.querySelector('body').classList.toggle('no-placeholders', !active);
+}
 
 /**
  * Uses a MutationObserver to watch for the insertion of new thumb DOM nodes on the Browse Results page
@@ -43,7 +51,8 @@ function watchForNewThumbs() {
 
     const browse = document.querySelector('#browse-results');
     if (browse !== undefined && browse !== null) {
-        const target = browse.querySelector('.results-page-thumb'); //TODO: handle the "full view" browse mode
+        //TODO: handle other DOM structures (like the "Full View" browse mode and galleries/folders)
+        const target = browse.querySelector('.results-page-thumb');
 
         if (target !== undefined && target !== null) {
 

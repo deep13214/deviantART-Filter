@@ -31,6 +31,29 @@
     "message": "Open in a a new popup window",
     "description": "The label for the value of the Management Panel Type option that corresponds to using a new browser window."
   },
+  "OptionMetadataEnabledName": {
+    "message": "Load Deviation Metadata",
+    "description": ""
+  },
+  "OptionMetadataEnabledDescription": {
+    "message": "When enabled, metadata (for tags and categories) will be automatically loaded in the background while you are browsing. Disabling this may improve browsing performance, but Tag and Category filtering will be disabled.",
+    "description": ""
+  },
+  "OptionMetadataEnabledValueTrue": {
+    "message": "Load Metadata",
+    "description": ""
+  },
+  "OptionMetadataEnabledValueFalse": {
+    "message": "Do NOT Load Metadata",
+    "description": ""
+  },
+  "OptionMetadataBatchSizeName": {
+    "message": "Metadata Batch Size",
+    "description": ""
+  },
+  "OptionMetadataBatchSizeDescription": {
+    "message": "Specifies the number of deviations for which to load metadata at a time. Setting this value to a lower number may improve browsing performance."
+  },
   "OptionMetadataCacheTTLName": {
     "message": "Number of Days to Cache Metadata",
     "description": ""

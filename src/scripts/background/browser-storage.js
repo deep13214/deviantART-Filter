@@ -23,25 +23,48 @@ const BrowserStorage = (() => {
             console.log('[Background] Storage.onSyncStorageChanged()', changes);
 
             for (const item of Object.keys(changes)) {
+                if (changes[item].oldValue === changes[item].newValue) {
+                    continue;
+                }
+
                 switch (item) {
+                    case 'metadataEnabled':
+                        //TODO: this message (and maybe the others) actually needs to go to the Management Page AND all open tabs...
+                        //return BrowserTabs.sendMessageToAllTabs({
+                        browser.runtime.sendMessage({
+                            'action': 'toggle-metadata-enabled',
+                            'data': {
+                                'metadataEnabled': changes[item].newValue
+                            }
+                        });
+                        break;
+
                     case 'metadataCacheTTL':
-                        return BrowserTabs.sendMessageToAllTabs({
+                        BrowserTabs.sendMessageToAllTabs({
                             'action': 'metadata-cache-ttl-changed',
                             'data': {
                                 'metadataCacheTTL': changes[item].newValue
                             }
                         });
+                        break;
 
                     case 'metadataDebug':
-                        return BrowserTabs.sendMessageToAllTabs({
+                        BrowserTabs.sendMessageToAllTabs({
                             'action': 'toggle-metadata-debug',
                             'data': {
                                 'metadataDebug': changes[item].newValue
                             }
                         });
+                        break;
 
                     case 'placeholders':
-                        return BrowserTabs.sendMessageToAllTabs({ 'action': 'toggle-placeholders' });
+                        BrowserTabs.sendMessageToAllTabs({
+                            'action': 'toggle-placeholders',
+                            'data': {
+                                'placeholders': changes[item].newValue
+                            }
+                        });
+                        break;
                 }
             }
         },
