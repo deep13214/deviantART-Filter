@@ -1,5 +1,5 @@
 //angular.module('deviantArtFilter.components', [])
-angular.module('deviantArtFilter.components.OptionsPanel', ['schemaForm', 'ngMessages'])
+angular.module('deviantArtFilter.components.OptionsPanel', ['schemaForm'])
 
     .controller('OptionsPanelCtrl', ['$scope', function ($scope) {
 
@@ -43,6 +43,10 @@ angular.module('deviantArtFilter.components.OptionsPanel', ['schemaForm', 'ngMes
         $scope.config = {
             'formDefaults': {
                 'disableSuccessState': true,
+                'feedback': false,
+                'ngModelOptions': {
+                    'debounce': 500 // TODO: this should only be for text-based input fields
+                },
                 'onChange': $scope.changeOption
             },
             'validationMessage': {
