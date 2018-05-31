@@ -43,10 +43,13 @@ const Options = (() => {
             'default': 96,
             'visible': true,
             'order': 3,
-            'type': 'number',
+            'dataType': 'number',
+            'uiType': 'select',
             'minimum': 8,
             'maximum': 96,
-            'condition': 'options.metadataEnabled'
+            'condition': 'options.metadataEnabled',
+            //TODO: make this more configurable? this makes an array of 8 to 96 in steps of 8
+            'enum': Array.from({'length': 12}, (v,i) => (i + 1) * 8)
         },
 
         {
@@ -191,13 +194,12 @@ const Options = (() => {
             let form = [];
 
             for (const option of options) {
-                const prop = option;
-                prop.title = browser.i18n.getMessage(`Option${option.id}Name`);
-                prop.description = browser.i18n.getMessage(`Option${option.id}Description`);
-                if (prop.dataType !== undefined) {
-                    prop.type = prop.dataType;
-                    delete prop.dataType;
-                }
+                const prop = {
+                    'id': option.id,
+                    'title': browser.i18n.getMessage(`Option${option.id}Name`),
+                    'description': browser.i18n.getMessage(`Option${option.id}Description`),
+                    'type': option.dataType || option.type
+                };
 
                 const elem = {
                     'key': option.id,
@@ -214,6 +216,13 @@ const Options = (() => {
                             'name': browser.i18n.getMessage(`Option${option.id}Value${val.value}`)
                         });
                     }
+                } else if (option.enum !== undefined && prop.type !== 'string') {
+                    elem.titleMap = option.enum.map((val) => {
+                        return {
+                            'value': val,
+                            'name': val
+                        };
+                    });
                 }
 
                 if (prop.type !== 'boolean') {
