@@ -5,6 +5,10 @@ const TagsFilter = (() => {
     const ID = 'tags';      // the unique identified for the filter (used as the "key" used for local storage)
     const NAME = 'Tags';    // the internal "name" (NOT translated) for the filter (used for retrieving localized messages)
 
+    const DEPENDENCIES = [
+        'metadata'
+    ];
+
     const PROPERTIES = [
         {
             'field': 'tag',
@@ -44,7 +48,7 @@ const TagsFilter = (() => {
     class TagsFilter extends Filter {
 
         constructor() {
-            super(ID, NAME, PROPERTIES);
+            super(ID, NAME, PROPERTIES, DEPENDENCIES);
         }
 
         /**

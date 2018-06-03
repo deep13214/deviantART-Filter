@@ -161,7 +161,7 @@ const Filters = (() => {
         },
 
         /**
-         * Sends an "update-filter" message with all data for the filter to a specific tab
+         * Sends an "update-filter" message (with all data for that filter) for all filters to a specific tab
          * @param {tab} tab
          */
         'sendFilterDataToTab': function (tab) {
@@ -177,6 +177,49 @@ const Filters = (() => {
                 return Promise.resolve(results);
             }).catch((error) => {
                 console.error('[Background] Filters.applyAllFiltersToTab() :: Error', error);
+                return Promise.reject(error);
+            });
+        },
+
+        /**
+         * Sends an "update-filter" message (with all data for that filter) for all filters to all tabs
+         */
+        'sendFilterDataToAllTabs': function () {
+            console.log('[Background] Filters.sendFilterDataToAllTabs()');
+
+            const promises = [];
+            AVAILABLE_FILTERS.forEach((filter) => {
+                promises.push(filter.sendFilterDataToAllTabs());
+            });
+
+            return Promise.all(promises).then((results) => {
+                console.log('[Background] Filters.sendFilterDataToAllTabs() :: Results', results);
+                return Promise.resolve(results);
+            }).catch((error) => {
+                console.error('[Background] Filters.sendFilterDataToAllTabs() :: Error', error);
+                return Promise.reject(error);
+            });
+        },
+
+        /**
+         * Event handler for when a dependency has changed
+         * @param {string} dependency the name of the dependency that has changed
+         * @param {*} oldValue the old value of the dependency
+         * @param {*} newValue the new value of the dependency
+         */
+        'onDependencyChange': function (dependency, oldValue, newValue) {
+            console.log('[Background] Filters.onDependencyChange()', dependency, oldValue, newValue);
+
+            const promises = [];
+            AVAILABLE_FILTERS.forEach((filter) => {
+                promises.push(filter.onDependencyChange(dependency, oldValue, newValue));
+            });
+
+            return Promise.all(promises).then((results) => {
+                console.log('[Background] Filters.onDependencyChange() :: Results', results);
+                return Promise.resolve(results);
+            }).catch((error) => {
+                console.error('[Background] Filters.onDependencyChange() :: Error', error);
                 return Promise.reject(error);
             });
         },
@@ -206,13 +249,14 @@ const Filters = (() => {
         'getFiltersMetaData': function () {
             console.log('[Background] Filters.getFiltersMetaData()');
 
-            const meta = [];
-
+            const promises = [];
             AVAILABLE_FILTERS.forEach((filter) => {
-                meta.push(filter.getMetaData());
+                promises.push(filter.getMetaData());
             });
 
-            return { 'filters': meta };
+            return Promise.all(promises).then((results) => {
+                return { 'filters': results };
+            });
         },
 
         /**

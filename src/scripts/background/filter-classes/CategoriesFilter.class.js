@@ -5,6 +5,10 @@ const CategoriesFilter = (() => {
     const ID = 'categories';      // the unique identified for the filter (used as the "key" used for local storage)
     const NAME = 'Categories';    // the internal "name" (NOT translated) for the filter (used for retrieving localized messages)
 
+    const DEPENDENCIES = [
+        'metadata'
+    ];
+
     const PROPERTIES = [
         {
             'field': 'name',
@@ -45,7 +49,7 @@ const CategoriesFilter = (() => {
     class CategoriesFilter extends Filter {
 
         constructor() {
-            super(ID, NAME, PROPERTIES);
+            super(ID, NAME, PROPERTIES, DEPENDENCIES);
         }
 
         /**

@@ -23,18 +23,20 @@ const TagsFilter = (() => {
 
             super.resetFilter();
 
-            filter.data.forEach((item) => {
-                const placeholderText = browser.i18n.getMessage('FilterTypeTagsPlaceholderText', [item.tag]);
+            if (filter.enabled) {
+                filter.data.forEach((item) => {
+                    const placeholderText = browser.i18n.getMessage('FilterTypeTagsPlaceholderText', [item.tag]);
 
-                const selector = item.wildcard ? '*' : '~';
+                    const selector = item.wildcard ? '*' : '~';
 
-                const browseSelectors = [
-                    `.torpedo-container .thumb[data-tags${selector}="${item.tag}"]`,                    // browse (thumb wall)
-                    `*[data-tags${selector}="${item.tag}"] a.full-view-link`                            // browse (full view)
-                ];
+                    const browseSelectors = [
+                        `.torpedo-container .thumb[data-tags${selector}="${item.tag}"]`,                    // browse (thumb wall)
+                        `*[data-tags${selector}="${item.tag}"] a.full-view-link`                            // browse (full view)
+                    ];
 
-                super.insertFilterRules(browseSelectors, placeholderText);
-            });
+                    super.insertFilterRules(browseSelectors, placeholderText);
+                });
+            }
         }
     }
 

@@ -7,15 +7,21 @@
         </button> {{alert.msg}}
     </div>
 
-    <div class="alert alert-warning" ng-if="!filterTableData.total()">
+    <div class="alert alert-warning" ng-hide="filter.enabled">
+        <strong>{{labels.disabled}}</strong>
+        <br/>
+        <br/>{{labels.disabledReasonMetadata}}<!-- TODO: this must be driven by the actual reason the filter is disabled -->
+    </div>
+
+    <div class="alert alert-warning" ng-show="filter.enabled && !filterTableData.total()">
         <strong>{{filter.labels.none}}</strong>
         <br/>
         <br/>{{filter.labels.help}}
     </div>
 
-    <div class="panel panel-primary">
+    <div class="panel panel-primary" ng-show="filter.enabled">
         <div class="panel-heading">
-            <h5 class="panel-title">{{createHeading}}</h5>
+            <h5 class="panel-title">{{labels.create}}</h5>
         </div>
         <div class="panel-body">
             <form class="form-horizontal" name="form">
@@ -54,7 +60,7 @@
 
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
-                        <button type="submit" class="btn btn-primary" ng-click="addItemToFilter($event)" ng-disabled="form.$pristine || form.$invalid">{{createFilterLbl}}</button>
+                        <button type="submit" class="btn btn-primary" ng-click="addItemToFilter($event)" ng-disabled="form.$pristine || form.$invalid">{{labels.createFilter}}</button>
                     </div>
                 </div>
 
@@ -62,11 +68,11 @@
         </div>
     </div>
 
-    <div class="panel panel-default" ng-show="filterTableData.total()">
+    <div class="panel panel-default" ng-show="filter.enabled && filterTableData.total()">
         <div class="panel-heading">
             <h5 class="panel-title">
                 <span ng-show="filterTableData.total()">{{showingFilterCount()}}</span>
-                <span ng-hide="filterTableData.total()">{{filteredLbl}}</span>
+                <span ng-hide="filterTableData.total()">{{labels.filtered}}</span>
             </h5>
         </div>
 
@@ -76,7 +82,7 @@
                     <span ng-switch-default>{{row[col.field]}}</span>
                     <time ng-switch-when="date" datetime="{{row[col.field] | date:'medium'}}">{{row[col.field] | date:'longDate'}}</time>
                     <div ng-switch-when="command">
-                        <button type="button" class="btn btn-sm btn-danger" ng-click="removeItemFromFilter($event, row)">{{removeFilterLbl}}</button>
+                        <button type="button" class="btn btn-sm btn-danger" ng-click="removeItemFromFilter($event, row)">{{labels.removeFilter}}</button>
                     </div>
                 </td>
             </tr>

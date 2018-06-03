@@ -27,44 +27,55 @@ const BrowserStorage = (() => {
                     continue;
                 }
 
+                let message;
+
                 switch (item) {
                     case 'metadataEnabled':
-                        //TODO: this message (and maybe the others) actually needs to go to the Management Page AND all open tabs...
-                        //return BrowserTabs.sendMessageToAllTabs({
-                        browser.runtime.sendMessage({
+                        Filters.onDependencyChange('metadata', changes[item].oldValue, changes[item].newValue);
+                        message = {
                             'action': 'toggle-metadata-enabled',
                             'data': {
                                 'metadataEnabled': changes[item].newValue
                             }
-                        });
+                        };
                         break;
 
                     case 'metadataCacheTTL':
-                        BrowserTabs.sendMessageToAllTabs({
+                        message = {
                             'action': 'metadata-cache-ttl-changed',
                             'data': {
                                 'metadataCacheTTL': changes[item].newValue
                             }
-                        });
+                        };
                         break;
 
                     case 'metadataDebug':
-                        BrowserTabs.sendMessageToAllTabs({
+                        message = {
                             'action': 'toggle-metadata-debug',
                             'data': {
                                 'metadataDebug': changes[item].newValue
                             }
-                        });
+                        };
                         break;
 
                     case 'placeholders':
-                        BrowserTabs.sendMessageToAllTabs({
+                        message = {
                             'action': 'toggle-placeholders',
                             'data': {
                                 'placeholders': changes[item].newValue
                             }
-                        });
+                        };
                         break;
+
+                    default:
+                        message = null;
+                        break;
+                }
+
+                if (message !== undefined && message !== null) {
+                    BrowserTabs.sendMessageToAllTabs(message);
+                    browser.runtime.sendMessage(message);
+                    message = null;
                 }
             }
         },

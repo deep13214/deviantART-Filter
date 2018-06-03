@@ -56,21 +56,23 @@ const UsersFilter = (() => {
 
             super.resetFilter();
 
-            filter.data.forEach((item) => {
-                const placeholderText = browser.i18n.getMessage('FilterTypeUsersPlaceholderText', [item.username]);
+            if (filter.enabled) {
+                filter.data.forEach((item) => {
+                    const placeholderText = browser.i18n.getMessage('FilterTypeUsersPlaceholderText', [item.username]);
 
-                const browseSelectors = [
-                    `.torpedo-container .thumb[href*="//${item.username}.deviantart.com"]`,             // browse (thumb wall)
-                    `a.full-view-link[href*="${item.username}.deviantart.com"]`                         // browse (full view)
-                ];
+                    const browseSelectors = [
+                        `.torpedo-container .thumb[href*="//${item.username}.deviantart.com"]`,             // browse (thumb wall)
+                        `a.full-view-link[href*="${item.username}.deviantart.com"]`                         // browse (full view)
+                    ];
 
-                const additionalSelectors = [
-                    `.thumb a:not(.torpedo-thumb-link)[href*="//${item.username}.deviantart.com"]`,     // deviation sidebar
-                    `*[data-embed-format="thumb"] .thumb[href*="//${item.username}.deviantart.com"]`    // comments, journals
-                ];
+                    const additionalSelectors = [
+                        `.thumb a:not(.torpedo-thumb-link)[href*="//${item.username}.deviantart.com"]`,     // deviation sidebar
+                        `*[data-embed-format="thumb"] .thumb[href*="//${item.username}.deviantart.com"]`    // comments, journals
+                    ];
 
-                super.insertFilterRules(browseSelectors, placeholderText, additionalSelectors);
-            });
+                    super.insertFilterRules(browseSelectors, placeholderText, additionalSelectors);
+                });
+            }
         }
 
         /**

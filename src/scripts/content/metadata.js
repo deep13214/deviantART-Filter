@@ -4,6 +4,8 @@ const Metadata = (() => {
 
     const Metadata = {
 
+        'enabled': true,
+
         'useCache': false,
 
         /**
@@ -14,48 +16,74 @@ const Metadata = (() => {
 
             browser.runtime.onMessage.addListener(this.onMessage.bind(this));
 
+            const { metadataEnabled } = await browser.storage.sync.get('metadataEnabled');
+
+            this.enabled = metadataEnabled;
+
+            return this.enabled ? this.enable() : this.disable();
+        },
+
+        'enable': async function () {
+            console.log('[Content] Metadata.enable()');
+
             const { metadataCacheTTL } = await browser.storage.sync.get('metadataCacheTTL');
             this.useCache = parseInt(metadataCacheTTL, 10) > 0;
+            this.useCache ? MetadataCache.trim(metadataCacheTTL) : MetadataCache.clear();
 
+            // load metadata for all thumbs already in the DOM
             this.handleThumbs(document.querySelectorAll('span.thumb'));
 
-            if (this.useCache) {
-                MetadataCache.trim(metadataCacheTTL);
-            } else {
-                MetadataCache.clear();
-            }
-
             const { metadataDebug } = await browser.storage.sync.get('metadataDebug');
-            console.log('[Content] Metadata.init() :: Debug Enabled', metadataDebug);
             document.querySelector('body').classList.toggle('debug-metadata', metadataDebug);
+        },
+
+        'disable': async function () {
+            console.log('[Content] Metadata.disable()');
+
+            MetadataCache.clear();
+            document.querySelector('body').classList.remove('debug-metadata');
+            //TODO: this should also remove the metadata attributes that have been added to thumbs in the COM
         },
 
         /**
          *
          */
-        'onMessage': function (message) {
-            console.log('[Content] Metadata.onMessage()', message);
+        'onMessage': function (message, sender) {
+            console.log('[Content] Metadata.onMessage()', message, sender);
 
-            switch (message.action) {
-                case 'set-metadata':
-                    if (this.useCache) {
-                        MetadataCache.save(message.data.metadata);
-                    }
-                    this.setMetadataOnThumbnails(message.data.metadata, false);
-                    break;
+            if (message.action !== undefined) {
+                switch (message.action) {
+                    case 'toggle-metadata-enabled':
+                        this.enabled = message.data.metadataEnabled;
+                        this.enabled ? this.enable() : this.disable();
+                        break;
 
-                case 'metadata-cache-ttl-changed':
-                    this.useCache = parseInt(message.data.metadataCacheTTL, 10) > 0;
-                    if (this.useCache) {
-                        MetadataCache.trim(message.data.metadataCacheTTL);
-                    } else {
-                        MetadataCache.clear();
-                    }
-                    break;
+                    case 'set-metadata':
+                        if (this.enabled) {
+                            if (this.useCache) {
+                                MetadataCache.save(message.data.metadata);
+                            }
+                            this.setMetadataOnThumbnails(message.data.metadata, false);
+                        }
+                        break;
 
-                case 'toggle-metadata-debug':
-                    document.querySelector('body').classList.toggle('debug-metadata', message.data.metadataDebug);
-                    break;
+                    case 'metadata-cache-ttl-changed':
+                        if (this.enabled) {
+                            this.useCache = parseInt(message.data.metadataCacheTTL, 10) > 0;
+                            if (this.useCache) {
+                                MetadataCache.trim(message.data.metadataCacheTTL);
+                            } else {
+                                MetadataCache.clear();
+                            }
+                        }
+                        break;
+
+                    case 'toggle-metadata-debug':
+                        if (this.enabled) {
+                            document.querySelector('body').classList.toggle('debug-metadata', message.data.metadataDebug);
+                        }
+                        break;
+                }
             }
 
             return true;
@@ -68,6 +96,11 @@ const Metadata = (() => {
          */
         'setMetadataOnThumbnails': function (metadata, requestMissingMetadata = false) {
             console.log('[Content] Metadata.setMetadataOnDeviations()', metadata);
+
+            if (!this.enabled) {
+                console.log('[Content] Metadata.setMetadataOnThumbnails() :: Metadata is Disabled');
+                return;
+            }
 
             metadata.forEach((meta) => {
                 const link = document.querySelector(`a[href*="${meta.url}"]`);
@@ -96,11 +129,13 @@ const Metadata = (() => {
 
             const thumbs = document.querySelectorAll('span.thumb:not([data-deviation-uuid])');
             if (thumbs.length) {
-                console.error(`[Content] Metadata.setMetadataOnDeviations() :: There are ${thumbs.length} thumbnails missing metadata (of ${document.querySelectorAll('span.thumb').length} total thumbnails) after inserting metadata`);
+                console.info(`[Content] Metadata.setMetadataOnDeviations() :: There are ${thumbs.length} thumbnails missing metadata (of ${document.querySelectorAll('span.thumb').length} total thumbnails) after inserting metadata`);
                 if (requestMissingMetadata) {
                     this.requestMetadataForURL();
                 }
             }
+
+            return;
         },
 
         /**
@@ -110,6 +145,11 @@ const Metadata = (() => {
          */
         'requestMetadataForURL': function (url) {
             console.log('[Content] Metadata.requestMetadataForURL()', url);
+
+            if (!this.enabled) {
+                console.log('[Content] Metadata.requestMetadataForURL() :: Metadata is Disabled');
+                return;
+            }
 
             if (url === undefined || url === null) {
                 const active = document.querySelector('#browse-sidemenu div.browse-facet-order ul li a.selected');
@@ -140,21 +180,26 @@ const Metadata = (() => {
         'handleThumbs': async function (thumbs) {
             console.log('[Content] Metadata.handleThumbs()', thumbs);
 
-            if (!thumbs.length) {
-                return false;
+            if (!this.enabled) {
+                console.log('[Content] Metadata.handleThumbs() :: Metadata is Disabled');
+                return;
             }
 
+            if (!thumbs.length) {
+                return;
+            }
+
+            // try to load metadata from the IndexedDB first
             if (this.useCache) {
-                // try to load metadata from the IndexedDB first, then fallback to passively requesting via the API
                 const metadata = await MetadataCache.get(thumbs);
                 if (metadata.length) {
                     this.setMetadataOnThumbnails(metadata, true);
-                } else {
-                    this.requestMetadataForURL();
+                    return;
                 }
-            } else {
-                this.requestMetadataForURL();
             }
+
+            // if the cache is disabled, or if there was no cached metadata for the thumbs, use the API
+            return this.requestMetadataForURL();
         }
     };
 

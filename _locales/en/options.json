@@ -15,6 +15,10 @@
     "message": "The maximum value for this option is",
     "description": "The message displayed on an option if the value is greater than the maximum required value."
   },
+  "OptionsGroupHeadingMetadata": {
+    "message": "Metadata Options",
+    "description": "The heading using for the group of metadata-related options on the management panel."
+  },
   "OptionManagementPanelTypeName": {
     "message": "Management Panel Type",
     "description": ""

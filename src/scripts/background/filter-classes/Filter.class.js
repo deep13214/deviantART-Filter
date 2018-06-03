@@ -10,11 +10,13 @@ const Filter = (() => {
          * @param {string} id The unique identified for the filter (used as the "key" used for local storage)
          * @param {string} name The internal "name" (NOT translated) of the filter (used for retrieving localized messages)
          * @param {object[]} properties The properties available for the filter to utilize
+         * @param {string[]} [dependencies] The list of dependencies for the filter to work
          */
-        constructor(id, name, properties) {
+        constructor(id, name, properties, dependencies = null) {
             this.id = id;
             this.name = name;
             this.properties = properties;
+            this.dependencies = dependencies;
         }
 
         /**
@@ -38,7 +40,7 @@ const Filter = (() => {
          * Gets the meta data for the filter
          * @returns {Object} The meta data for the filter
          */
-        getMetaData() {
+        async getMetaData() {
             console.log(`${this.name}.getMetaData()`);
             return {
                 'id': this.id,
@@ -47,11 +49,39 @@ const Filter = (() => {
                     'plural': browser.i18n.getMessage(`FilterType${this.name}NamePlural`)
                 },
                 'properties': this.properties,
+                'dependencies': this.dependencies,
                 'labels': {
                     'none': browser.i18n.getMessage(`FilterType${this.name}LabelNone`),
                     'help': browser.i18n.getMessage(`FilterType${this.name}LabelHelp`)
-                }
+                },
+                'enabled': await this.isEnabled()
             };
+        }
+
+        /**
+         * Determines if the filter is enabled (by checking the declared dependencies)
+         * @returns {boolean} Whether the filter is enabled or not
+         */
+        async isEnabled() {
+            console.log(`${this.name}.isEnabled()`);
+
+            let enabled = true;
+            if (this.dependencies !== undefined || this.dependencies !== null || this.dependencies.length > 0) {
+
+                const { metadataEnabled } = await browser.storage.sync.get('metadataEnabled');
+
+                for (let i = 0; i < this.dependencies.length; i++) {
+                    switch (this.dependencies[i]) {
+                        case 'metadata':
+                            enabled &= metadataEnabled;
+                            break;
+                    }
+                }
+
+            }
+
+            console.log(`${this.name}.isEnabled() :: Return`, enabled);
+            return enabled;
         }
 
         /**
@@ -95,6 +125,7 @@ const Filter = (() => {
                 'data': {
                     'filter': {
                         'id': this.id,
+                        'enabled': await this.isEnabled(),
                         'data': items
                     }
                 }
@@ -114,10 +145,30 @@ const Filter = (() => {
                 'data': {
                     'filter': {
                         'id': this.id,
+                        'enabled': await this.isEnabled(),
                         'data': items
                     }
                 }
             });
+        }
+
+        /**
+         * Event handler for when a dependency has changed
+         * @param {string} dependency the name of the dependency that has changed
+         * @param {*} oldValue the old value of the dependency
+         * @param {*} newValue the new value of the dependency
+         */
+        async onDependencyChange(dependency, oldValue, newValue) {
+            console.log(`${this.name}.checkDependencyChange()`, dependency, oldValue, newValue);
+
+            if (this.dependencies !== undefined || this.dependencies !== null || this.dependencies.length > 0) {
+                if (this.dependencies.indexOf(dependency) !== -1) {
+                    //TODO: some dependencies may require additional logic to determine if an update should be sent
+                    return this.sendFilterDataToAllTabs();
+                }
+            }
+
+            return false;
         }
 
         /**

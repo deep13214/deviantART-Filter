@@ -48,6 +48,17 @@
       }
     }
   },
+  "LabelFilterDisabledPlaceholder": {
+    "message": "$FILTER$ Filters are Currently Disabled",
+    "placeholders": {
+      "filter": {
+        "content": "$1"
+      }
+    }
+  },
+  "LabelFilterDisabledReasonMetadata": {
+    "message": "This filter requires deviation metadata to be loaded; if you would like to use/manage this filter, you must first enable deviation metadata on the Options tab."
+  },
   "LabelUnknownFilterTypePlaceholder": {
     "message": "Unknown Filter Type: $FILTER$",
     "placeholders": {

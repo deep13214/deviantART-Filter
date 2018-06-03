@@ -5,6 +5,10 @@ const UsersFilter = (() => {
     const ID = 'users';      // the unique identified for the filter (used as the "key" used for local storage)
     const NAME = 'Users';    // the internal "name" (NOT translated) for the filter (used for retrieving localized messages)
 
+    const DEPENDENCIES = [
+
+    ];
+
     const PROPERTIES = [
         {
             'field': 'username',
@@ -33,7 +37,7 @@ const UsersFilter = (() => {
     class UsersFilter extends Filter {
 
         constructor() {
-            super(ID, NAME, PROPERTIES);
+            super(ID, NAME, PROPERTIES, DEPENDENCIES);
         }
 
         /**

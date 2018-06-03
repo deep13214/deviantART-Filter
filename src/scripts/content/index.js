@@ -18,10 +18,12 @@ AVAILABLE_FILTERS.forEach((filter) => {
 browser.runtime.onMessage.addListener((message) => {
     console.log('[Content] browser.runtime.onMessage', message);
 
-    switch (message.action) {
-        case 'toggle-placeholders':
-            togglePlaceholders(message.data.placeholders);
-            break;
+    if (message.action !== undefined) {
+        switch (message.action) {
+            case 'toggle-placeholders':
+                togglePlaceholders(message.data.placeholders);
+                break;
+        }
     }
 
     return true;
