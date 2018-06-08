@@ -13,8 +13,11 @@
   "vendor_files": [
     "./node_modules/angular/angular-csp.css",
     "./node_modules/angular/angular.min.js",
+    "./node_modules/angular-schema-form-range-slider/angular-schema-form-range-slider.min.js",
     "./node_modules/angular-messages/angular-messages.min.js",
     "./node_modules/angular-sanitize/angular-sanitize.min.js",
+    "./node_modules/angularjs-slider/dist/rzslider.min.css",
+    "./node_modules/angularjs-slider/dist/rzslider.min.js",
     "./node_modules/angular-schema-form/dist/bootstrap-decorator.min.js",
     "./node_modules/angular-schema-form/dist/schema-form.min.js",
     "./node_modules/bootstrap/dist/css/bootstrap.min.css",
