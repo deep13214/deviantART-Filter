@@ -44,12 +44,17 @@ const Options = (() => {
             'visible': true,
             'order': 3,
             'dataType': 'number',
-            'uiType': 'select',
-            'minimum': 8,
+            'uiType': 'range',
+            'minimum': 16,
             'maximum': 96,
             'condition': 'options.metadataEnabled',
-            //TODO: make this more configurable? this makes an array of 8 to 96 in steps of 8
-            'enum': Array.from({'length': 12}, (v,i) => (i + 1) * 8)
+            'options': {
+                'floor': 16,
+                'ceil': 96,
+                'step': 16,
+                'showTicks': true,
+                'showTicksValues': true
+            }
         },
 
         {
@@ -205,7 +210,8 @@ const Options = (() => {
                     'key': option.id,
                     'type': option.uiType,
                     'condition': option.condition,
-                    'group': option.group
+                    'group': option.group,
+                    'options': option.options
                 };
 
                 if (option.values !== undefined) {

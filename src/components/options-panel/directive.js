@@ -1,5 +1,5 @@
 //angular.module('deviantArtFilter.components', [])
-angular.module('deviantArtFilter.components.OptionsPanel', ['schemaForm'])
+angular.module('deviantArtFilter.components.OptionsPanel', ['rzModule', 'schemaForm'])
 
     .controller('OptionsPanelCtrl', ['$scope', function ($scope) {
 
@@ -15,21 +15,24 @@ angular.module('deviantArtFilter.components.OptionsPanel', ['schemaForm'])
             $scope.alerts.splice(index, 1);
         };
 
-        $scope.changeOption = function (modelValue, form) {
-            console.log('[Component] OptionsPanelCtrl.changeOption()', modelValue, form);
-            if ($scope.OptionsPanelCtrlForm[form.schema.id].$valid) {
+        $scope.changeOption = function (id, value) {
+            console.log('[Component] OptionsPanelCtrl.changeOption()', id, value);
+            const option = $scope.schema.properties[id];
+            console.log('[Component] OptionsPanelCtrl.changeOption() :: Option', option);
+
+            if ($scope.OptionsPanelCtrlForm[id] === undefined || $scope.OptionsPanelCtrlForm[id].$valid) {
                 browser.runtime.sendMessage({
                     'action': 'set-option',
                     'data': {
-                        'option': form.schema.id,
-                        'value': modelValue
+                        'option': id,
+                        'value': value
                     }
                 }).catch((error) => {
                     console.log('[Component] OptionsPanelCtrl.changeOption() :: Error', error);
                     $scope.$apply(() => {
                         $scope.alerts.push({
                             'type': 'danger',
-                            'msg': browser.i18n.getMessage('OptionUpdateError', form.schema.name, [error.message])
+                            'msg': browser.i18n.getMessage('OptionUpdateError', option.title || id, [error.message])
                         });
                     });
                 });
@@ -46,8 +49,7 @@ angular.module('deviantArtFilter.components.OptionsPanel', ['schemaForm'])
                 'feedback': false,
                 'ngModelOptions': {
                     'debounce': 500 // TODO: this should only be for text-based input fields
-                },
-                'onChange': $scope.changeOption
+                }
             },
             'validationMessage': {
                 '101': browser.i18n.getMessage('OptionLabelMinimum') + ': {{schema.minimum}}',
@@ -67,6 +69,14 @@ angular.module('deviantArtFilter.components.OptionsPanel', ['schemaForm'])
                 $scope.schema = response.schema;
                 $scope.form = response.form;
                 $scope.options = response.values;
+
+                $scope.$watchCollection('options', function(newOptions, oldOptions) {
+                    for (var prop in newOptions) {
+                        if (newOptions[prop] !== oldOptions[prop]) {
+                            $scope.changeOption(prop, newOptions[prop]);
+                        }
+                    }
+                });
             }).catch((error) => {
                 console.error('[Component] OptionsPanelCtrl.getOptionsSchemaForm() :: Error', error);
                 $scope.alerts.push({
