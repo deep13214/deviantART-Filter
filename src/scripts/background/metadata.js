@@ -122,9 +122,9 @@ const Metadata = (() => {
     const Metadata = {
 
         /**
-         * Retrieves metadata for the deviations on the tab's page
-         * @param {tab} tab
-         * @param {string} [url]
+         * Sends a message to the specified tab with metadata for the deviations displayed on that tab
+         * @param {tab} tab the tab for which metadata should be retrieved
+         * @param {string} [url] the URL for which metadata should be retrieved
          */
         'sendMetadataToTab': async function (tab, url) {
             console.log('[Background] Metadata.sendMetadataToTab()', tab, url);
@@ -163,7 +163,10 @@ const Metadata = (() => {
         },
 
         /**
-         * @param {string} url
+         * Retrieves metadata for deviations for a supplied URL
+         * @param {string} url the URL for which metadata should be retrieved
+         * @param {number} [limit] the maximum number of deviations to retrieve
+         * @returns {object[]} the array of metadata objects with deviation IDs and URLs
          */
         'getMetadataForURL': function (url, limit = BROWSE_API_LIMIT) {
             console.log('[Background] Metadata.getMetadataForURL()', url, limit);
@@ -182,6 +185,13 @@ const Metadata = (() => {
             return this.getMetadata(resource, data, limit);
         },
 
+        /**
+         * Retrieves deviations from an API resource
+         * @param {string} resource the API resource path
+         * @param {FormData} data GET parameters for the API request
+         * @param {number} [limit] the maximum number of deviations to retrieve
+         * @returns {object[]} the array of deviation objects from the API
+         */
         'getDeviations': async function (resource, data, limit = BROWSE_API_LIMIT) {
             console.log('[Background] Metadata.getDeviations()', resource, data, limit);
 
@@ -204,6 +214,11 @@ const Metadata = (() => {
             return deviations;
         },
 
+        /**
+         * Retrieves metadata for the supplied deviations
+         * @param {object[]} deviations the array of deviation objects
+         * @returns {object[]} the array of metadata objects with deviation IDs and URLs
+         */
         'getMetadataForDeviations': async function (deviations) {
             console.log('[Background] Metadata.getMetadataForDeviations()', deviations);
 
@@ -226,6 +241,13 @@ const Metadata = (() => {
             });
         },
 
+        /**
+         * Retrieves metadata for deviations from an API resource
+         * @param {string} resource the API resource path
+         * @param {FormData} data GET parameters for the API request
+         * @param {number} [limit] the maximum number of deviations to retrieve
+         * @returns {object[]} the array of metadata objects with deviation IDs and URLs
+         */
         'getMetadata': async function (resource, data, limit = BROWSE_API_LIMIT) {
             console.log('[Background] Metadata.getMetadata()', resource, data, limit);
 
@@ -236,6 +258,12 @@ const Metadata = (() => {
             return metadata;
         },
 
+        /**
+         * Extracts metadata from an API response and matches it to the corresponding deviation
+         * @param {object} response the metadata API response
+         * @param {object[]} deviations the array of deviation objects
+         * @returns {object[]} the array of metadata objects with deviation IDs and URLs
+         */
         'extractMetadataFromResponse': function (response, deviations) {
             console.log('[Background] Metadata.extractMetadataFromResponse()', response, deviations);
 
@@ -261,6 +289,7 @@ const Metadata = (() => {
         /**
          * Returns the Category Hierarchy (one level) for the specified category path
          * @param {FormData} data GET parameters for the API request
+         * @returns {object} the Category Hierarchy data
          */
         'getCategoryHierarchy': function (data) {
             console.log('[Background] Metadata.getCategoryHierarchy()', data);

@@ -31,7 +31,7 @@ const Filter = (() => {
          * @param {runtime.MessageSender} sender The sender of the message
          */
         onMessage(message, sender) {
-            console.log(`[Content] Filter('${this.name}').onMessage()`, message);
+            console.log(`[Content] Filter('${this.name}').onMessage()`, message, sender);
 
             if (message.action !== undefined) {
                 switch (message.action) {

@@ -23,6 +23,9 @@ const Metadata = (() => {
             return this.enabled ? this.enable() : this.disable();
         },
 
+        /**
+         * Enables and initializes metadata functionality
+         */
         'enable': async function () {
             console.log('[Content] Metadata.enable()');
 
@@ -37,6 +40,9 @@ const Metadata = (() => {
             document.querySelector('body').classList.toggle('debug-metadata', metadataDebug);
         },
 
+        /**
+         * Disables and resets metadata functionality
+         */
         'disable': async function () {
             console.log('[Content] Metadata.disable()');
 
@@ -46,7 +52,9 @@ const Metadata = (() => {
         },
 
         /**
-         *
+         * Event listener for browser runtime messages
+         * @param {object} message The message
+         * @param {runtime.MessageSender} sender The sender of the message
          */
         'onMessage': function (message, sender) {
             console.log('[Content] Metadata.onMessage()', message, sender);
