@@ -64,7 +64,7 @@ const CategoriesFilter = (() => {
                 item.path = item.path.toLowerCase();
             }
 
-            return item;
+            return super.normalize(item);
         }
 
     }
