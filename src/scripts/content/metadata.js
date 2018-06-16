@@ -48,7 +48,7 @@ const Metadata = (() => {
 
             MetadataCache.clear();
             document.querySelector('body').classList.remove('debug-metadata');
-            //TODO: this should also remove the metadata attributes that have been added to thumbs in the COM
+            //TODO: should this also remove the metadata attributes that have been added to thumbs in the DOM?
         },
 
         /**
