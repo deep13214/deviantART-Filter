@@ -1,5 +1,5 @@
 //angular.module('deviantArtFilter.components', [])
-angular.module('deviantArtFilter.components.OptionsPanel', ['rzModule', 'schemaForm'])
+angular.module('deviantArtFilter.components.OptionsPanel', ['rzModule', 'schemaFormPanel', 'schemaForm'])
 
     .controller('OptionsPanelCtrl', ['$scope', function ($scope) {
 

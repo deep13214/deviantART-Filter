@@ -244,8 +244,8 @@ const Options = (() => {
                 if (elem.group !== undefined) {
                     if (groups[elem.group] === undefined) {
                         groups[elem.group] = {
-                            'type': 'section',
-                            'htmlClass': 'panel-body',
+                            'type': 'panel',
+                            'title': browser.i18n.getMessage(`OptionsGroupHeading${elem.group}`),
                             'items': []
                         };
                     }
@@ -254,14 +254,7 @@ const Options = (() => {
             }
 
             for (const group in groups) {
-                form.push({
-                    'type': 'section',
-                    'htmlClass': 'panel panel-default',
-                    'items': [{ //TODO: angular-schema-form puts the panel-heading inside additional markup (2 extra levels deep), so the default Bootstrap CSS (`.panel-* > .panel-heading`) doesn't apply properly
-                        'type': 'help',
-                        'helpvalue': '<div class="panel-heading"><h4 class="panel-title">' + browser.i18n.getMessage(`OptionsGroupHeading${group}`) + '</h4></div>'
-                    }].concat(groups[group])
-                });
+                form.push(groups[group]);
             }
 
             form = form.filter((elem) => elem.group === undefined);
