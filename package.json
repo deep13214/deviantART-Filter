@@ -1,7 +1,7 @@
 {
   "name": "deviantart-filter",
   "title": "DeviantArt Filter",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "description": "Allows configurable filtering/removal of deviations by user, tag, and/or category on DeviantArt",
   "author": "Ryan Thaut <rthaut@gmail.com> (http://ryanthaut.com)",
   "homepage": "https://github.com/rthaut/deviantART-Filter",
@@ -52,15 +52,15 @@
     "rollup-stream": "^1.24.1",
     "uglify-es": "^3.3.9",
     "verb": "github:verbose/verb#dev",
-    "verb-generate-readme": "^0.6.0",
+    "verb-generate-readme": "^0.7.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^2.0.0",
     "web-ext": "^2.7.0"
   },
   "dependencies": {
-    "angular": "~1.6.6",
-    "angular-messages": "~1.6.6",
-    "angular-sanitize": "~1.6.6",
+    "angular": "^1.7.2",
+    "angular-messages": "^1.7.2",
+    "angular-sanitize": "^1.7.2",
     "angular-schema-form": "^0.8.13",
     "angular-schema-form-range-slider": "github:jamesguthrie/angular-schema-form-range-slider",
     "angular-schema-form-panel": "^1.0.0",
