@@ -2,9 +2,14 @@ dependencies:
   angular: 1.7.2
   angular-messages: 1.7.2
   angular-sanitize: 1.7.2
+  angular-schema-form: 0.8.13
+  angular-schema-form-panel: 1.0.0
+  angular-schema-form-range-slider: github.com/jamesguthrie/angular-schema-form-range-slider/710174c4c0f87a33bcc6645b18e680af55f93b55
+  angularjs-slider: 6.5.1
   bootstrap: 3.3.7
   jquery: 3.3.1
   ng-table: 3.0.1
+  tv4: 1.3.0
   webextension-polyfill: 0.2.1
 devDependencies:
   cssnano: 3.10.0
@@ -21,6 +26,7 @@ devDependencies:
   gulp-load-plugins: 1.5.0
   gulp-merge-json: 1.3.1
   gulp-postcss: 7.0.1
+  gulp-print: 5.0.0
   gulp-rename: 1.3.0
   gulp-replace: 1.0.0
   gulp-svg2png: 2.0.2
@@ -34,6 +40,7 @@ devDependencies:
   ini: 1.3.5
   marked: 0.4.0
   merge-stream: 1.0.1
+  objectpath: 1.2.1
   pump: 3.0.0
   rollup-stream: 1.24.1
   through2: 2.0.3
@@ -287,10 +294,29 @@ packages:
     dev: false
     resolution:
       integrity: sha512-8XmhwhT+TwnLzz4VMq9kIqj9b2aBt4lgYWRw9s+Q8ysx0z/glDcnoPxMrlR/dXItlww8NM/1pscgO1bGVGdiXA==
+  /angular-schema-form-panel/1.0.0:
+    dev: false
+    resolution:
+      integrity: sha1-nqYFqqIpiSWKtOY+H68BdqYPp+M=
+  /angular-schema-form/0.8.13:
+    dependencies:
+      angular: 1.7.2
+      angular-sanitize: 1.7.2
+      objectpath: 1.2.1
+      tv4: 1.0.18
+    dev: false
+    resolution:
+      integrity: sha1-kLviqQZk0IPaPcEnH4kKlL59FA8=
   /angular/1.7.2:
     dev: false
     resolution:
       integrity: sha512-JcKKJbBdybUsmQ6x1M3xWyTYQ/ioVKJhSByEAjqrhmlOfvMFdhfMqAx5KIo8rLGk4DFolYPcCSgssjgTVjCtRQ==
+  /angularjs-slider/6.5.1:
+    dev: false
+    peerDependencies:
+      angular: ^1.2.x
+    resolution:
+      integrity: sha512-Yst/SDqLvoxqJ81qL1xISdJaiFdLpFtz63ufPG8R4F889Rpi7Hnv9gRLLjipM5HHmcYEeTGTbpBZrPcWg5p7Ug==
   /ansi-align/2.0.0:
     dependencies:
       string-width: 2.1.1
@@ -5303,6 +5329,17 @@ packages:
     dev: true
     resolution:
       integrity: sha1-Pxw22xGXFAw5nCUt3/M5EpY445U=
+  /gulp-print/5.0.0:
+    dependencies:
+      ansi-colors: 1.1.0
+      fancy-log: 1.3.2
+      map-stream: 0.0.7
+      vinyl: 2.2.0
+    dev: true
+    engines:
+      node: '>=6'
+    resolution:
+      integrity: sha512-i06wVFsGmWdmwrFft/ioNIgXnCvUa+Q4pfgoTCWoLjz95vsfjDy3UmOx1PegHje930fkhopc+5NSJAHbhNXI+g==
   /gulp-reflinks/0.2.0:
     dependencies:
       through2: 2.0.3
@@ -7644,6 +7681,10 @@ packages:
     dev: true
     resolution:
       integrity: sha1-0u9OuBGihkTHqJiZhcacL91JaCc=
+  /map-stream/0.0.7:
+    dev: true
+    resolution:
+      integrity: sha1-ih8HiW2CsQkmvTdEokIACfiJdKg=
   /map-stream/0.1.0:
     dev: true
     resolution:
@@ -8417,6 +8458,9 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha1-b+NI8qx/oPlcpiEiZZkJaCW7A60=
+  /objectpath/1.2.1:
+    resolution:
+      integrity: sha1-yHQzvdNSrqAU5PnAtS1wpCZSBS4=
   /omit-empty/0.3.6:
     dependencies:
       has-values: 0.1.4
@@ -11650,6 +11694,18 @@ packages:
     dev: true
     resolution:
       integrity: sha1-J6XeoGs2sEoKmWZ3SykIaPD8QP0=
+  /tv4/1.0.18:
+    dev: false
+    engines:
+      node: '>= 0.8.0'
+    resolution:
+      integrity: sha1-c5d2nwA1jjO/Uo3FyHZMYbbegkU=
+  /tv4/1.3.0:
+    dev: false
+    engines:
+      node: '>= 0.8.0'
+    resolution:
+      integrity: sha1-0CDIRvrdUMhVq7JeuuzGj8EPeWM=
   /tweetnacl/0.14.5:
     dev: true
     optional: true
@@ -12356,6 +12412,19 @@ packages:
       node: '>= 0.10'
     resolution:
       integrity: sha1-Ah+cLPlR1rk5lDyJ617lrdT9kkw=
+  /vinyl/2.2.0:
+    dependencies:
+      clone: 2.1.1
+      clone-buffer: 1.0.0
+      clone-stats: 1.0.0
+      cloneable-readable: 1.1.2
+      remove-trailing-separator: 1.1.0
+      replace-ext: 1.0.0
+    dev: true
+    engines:
+      node: '>= 0.10'
+    resolution:
+      integrity: sha512-MBH+yP0kC/GQ5GwBqrTPTzEfiiLjta7hTtvQtbxBgTeSXsmKQRQecjibMbxIXzVT3Y9KJK+drOz1/k+vsu8Nkg==
   /warning-symbol/0.1.0:
     dev: true
     engines:
@@ -12789,6 +12858,12 @@ packages:
     dev: true
     resolution:
       integrity: sha1-rQrUImUwm+QutW/IYZThfCTmapw=
+  github.com/jamesguthrie/angular-schema-form-range-slider/710174c4c0f87a33bcc6645b18e680af55f93b55:
+    dev: false
+    name: angular-schema-form-range-slider
+    resolution:
+      tarball: 'https://codeload.github.com/jamesguthrie/angular-schema-form-range-slider/tar.gz/710174c4c0f87a33bcc6645b18e680af55f93b55'
+    version: 0.1.0
   github.com/jonschlinkert/resolve-file/261082c95a5f407c43d82797c13bae3527462842:
     dependencies:
       cwd: 0.10.0
@@ -12862,6 +12937,10 @@ specifiers:
   angular: ^1.7.2
   angular-messages: ^1.7.2
   angular-sanitize: ^1.7.2
+  angular-schema-form: ^0.8.13
+  angular-schema-form-panel: ^1.0.0
+  angular-schema-form-range-slider: 'github:jamesguthrie/angular-schema-form-range-slider'
+  angularjs-slider: ^6.5.1
   bootstrap: ~3.3.7
   cssnano: ^3.10.0
   del: ^3.0.0
@@ -12877,6 +12956,7 @@ specifiers:
   gulp-load-plugins: ^1.5.0
   gulp-merge-json: ^1.3.1
   gulp-postcss: ^7.0.0
+  gulp-print: ^5.0.0
   gulp-rename: ^1.2.3
   gulp-replace: ^1.0.0
   gulp-svg2png: ^2.0.2
@@ -12892,10 +12972,12 @@ specifiers:
   marked: ^0.4.0
   merge-stream: ^1.0.1
   ng-table: ^3.0.1
+  objectpath: ^1.2.1
   pump: ^3.0.0
   rollup-stream: ^1.24.1
   through2: ^2.0.3
   time-stamp: ^2.0.0
+  tv4: ^1.3.0
   uglify-es: ^3.3.9
   verb: 'github:verbose/verb#dev'
   verb-generate-readme: ^0.7.0
