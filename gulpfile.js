@@ -235,6 +235,23 @@ gulp.task('build:vendor', () => {
 });
 
 
+gulp.task('build:vendor:fixes', () => {
+    return merge(Object.keys(cfg.supported_browsers).map((browser) => {
+        return $.pump([
+            gulp.src([
+                `./dist/${browser}/vendor/**/*`
+            ]),
+
+            // replace angular.uppercase() with String.prototype.toUpperCase() in angular-schema-form
+            // (only needed until https://github.com/json-schema-form/angular-schema-form/issues/970 is fixed)
+            $.gulpIf('**/schema-form.*.js', $.replace(/\w+\.uppercase\(([^\)]+)\)/gi, '$1.toUpperCase()')),
+
+            gulp.dest(`./dist/${browser}/vendor`),
+        ]);
+    }));
+});
+
+
 // ========================
 // package/distribute tasks
 // ========================
@@ -269,7 +286,8 @@ gulp.task('build', gulp.parallel(
     'build:components',
     'build:pages',
     'build:scripts',
-    'build:vendor'
+    'build:vendor',
+    'build:vendor:fixes'
 ));
 
 gulp.task('watch', (callback) => {
