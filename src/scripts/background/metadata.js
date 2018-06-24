@@ -1,6 +1,6 @@
 import BrowserTabs from './browser-tabs';
 import DeviantArtAPI from '../../helpers/DeviantArtAPI.class';
-import { URL } from '../../helpers/constants';
+import { URL, DEVIATION_SLUG_REGEX as SLUG_REGEX } from '../../helpers/constants';
 import Utils from '../../helpers/utils';
 
 
@@ -275,6 +275,7 @@ const Metadata = (() => {
                     metadata.push({
                         'uuid': deviation.deviationid,
                         'url': deviation.url,
+                        'slug': SLUG_REGEX.exec(deviation.url)[1],
                         'category_name': deviation.category,
                         'category_path': deviation.category_path,
                         'tags': data.tags.map(tag => tag.tag_name)

@@ -1,4 +1,4 @@
-# DeviantArt Filter 5.0.2
+# DeviantArt Filter 5.0.3
 
 > Allows configurable filtering/removal of deviations by user, tag, and/or category on DeviantArt
 
@@ -163,4 +163,3 @@ This setting, as the description states, is primarily for troubleshooting and de
 ### Browse Page with Placeholders Disabled
 
 ![Screenshot of DeviantArt with placeholders disabled for filtered deviations](https://raw.githubusercontent.com/rthaut/deviantART-Filter/master/screenshots/No-Placeholders.png)
-

@@ -1,4 +1,5 @@
 import MetadataCache from './metadata-cache';
+import { DEVIATION_SLUG_REGEX as SLUG_REGEX } from '../../helpers/constants';
 
 const Metadata = (() => {
 
@@ -99,11 +100,11 @@ const Metadata = (() => {
 
         /**
          * Sets metadata as data- attributes on the corresponding thumbnails
-         * @param {Object[]} metadata -
+         * @param {Object[]} metadata The array of metadata objects to process
          * @param {boolean} [requestMissingMetadata=false] Request missing metadata after processing
          */
         'setMetadataOnThumbnails': function (metadata, requestMissingMetadata = false) {
-            console.log('[Content] Metadata.setMetadataOnDeviations()', metadata);
+            console.log('[Content] Metadata.setMetadataOnDeviations()', metadata, requestMissingMetadata);
 
             if (!this.enabled) {
                 console.log('[Content] Metadata.setMetadataOnThumbnails() :: Metadata is Disabled');
@@ -111,28 +112,31 @@ const Metadata = (() => {
             }
 
             metadata.forEach((meta) => {
-                const link = document.querySelector(`a[href*="${meta.url}"]`);
+                const href = (meta.slug !== undefined && meta.slug !== null) ? meta.slug : meta.url;
+                const links = document.querySelectorAll(`a[href*="${href}"]`);
 
-                if (link !== undefined && link !== null) {
-                    const thumb = link.parentElement;
-                    const target = (thumb !== undefined && thumb !== null) ? thumb : link;
+                links.forEach((link) => {
+                    if (link !== undefined && link !== null) {
+                        const thumb = link.parentElement;
+                        const target = (thumb !== undefined && thumb !== null) ? thumb : link;
 
-                    if (meta.uuid) {
-                        target.setAttribute('data-deviation-uuid', meta.uuid);
+                        if (meta.uuid) {
+                            target.setAttribute('data-deviation-uuid', meta.uuid);
+                        }
+
+                        if (meta.category_name) {
+                            target.setAttribute('data-category', meta.category_name);
+                        }
+
+                        if (meta.category_path) {
+                            target.setAttribute('data-category-path', meta.category_path);
+                        }
+
+                        if (meta.tags && meta.tags.length) {
+                            target.setAttribute('data-tags', meta.tags.join(' '));
+                        }
                     }
-
-                    if (meta.category_name) {
-                        target.setAttribute('data-category', meta.category_name);
-                    }
-
-                    if (meta.category_path) {
-                        target.setAttribute('data-category-path', meta.category_path);
-                    }
-
-                    if (meta.tags && meta.tags.length) {
-                        target.setAttribute('data-tags', meta.tags.join(' '));
-                    }
-                }
+                });
             });
 
             const thumbs = document.querySelectorAll('span.thumb:not([data-deviation-uuid])');
@@ -199,7 +203,16 @@ const Metadata = (() => {
 
             // try to load metadata from the IndexedDB first
             if (this.useCache) {
-                const metadata = await MetadataCache.get(thumbs);
+                // try to load metadata from the IndexedDB first, then fallback to passively requesting via the API
+                const slugs = [];
+                thumbs.forEach((thumb) => {
+                    const link = thumb.querySelector('a');
+                    if (link !== undefined && link !== null) {
+                        slugs.push(SLUG_REGEX.exec(link.getAttribute('href'))[1]);
+                    }
+                });
+
+                const metadata = await MetadataCache.get(slugs);
                 if (metadata.length) {
                     this.setMetadataOnThumbnails(metadata, true);
                     return;
